@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Holy Moly!</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: 'Arial Black', sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #ffcc00;
+      text-shadow: 3px 3px 0px #ff0055;
+    }
+
+    .emoji-container {
+      font-size: 15rem; /* Tamanho do emoji */
+      line-height: 1;
+      user-select: none;
+      animation: bounce 1.5s infinite ease-in-out;
+      cursor: pointer;
+    }
+
+    /* Animação para dar um toque divertido */
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+      }
+      50% {
+        transform: translateY(-20px) scale(1.08);
+      }
+    }
+
+    p {
+      margin-top: 20px;
+      font-size: 1.2rem;
+      color: #aaaaaa;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>HOLY MOLY!</h1>
+  
+  <!-- Emoji no estilo estupefato/choque -->
+  <div class="emoji-container">
+    🤯
+  </div>
+
+  <p>Pressione F12 para ajustar o código ou mude o emoji no HTML!</p>
+
+</body>
+</html>
