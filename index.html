@@ -1,352 +1,294 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="scroll-smooth">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conecta Sênior - Tecnologia Fácil e Sem Medo</title>
-    
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Fonts: Lexend (altíssima legibilidade) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            500: '#16a34a',
-                            600: '#15803d',
-                            700: '#166534',
-                            800: '#14532d',
-                        },
-                        seniorBlue: {
-                            100: '#e0f2fe',
-                            500: '#0284c7',
-                            700: '#0369a1',
-                            900: '#0c4a6e',
-                        },
-                        seniorOrange: {
-                            500: '#f97316',
-                            600: '#ea580c',
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Lexend', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        body {
-            font-family: 'Lexend', sans-serif;
-            transition: font-size 0.2s ease, background-color 0.3s ease, color 0.3s ease;
-        }
-
-        /* Classes de Acessibilidade */
-        .high-contrast {
-            background-color: #000000 !important;
-            color: #FFFF00 !important;
-        }
-        .high-contrast * {
-            background-color: #000000 !important;
-            color: #FFFF00 !important;
-            border-color: #FFFF00 !important;
-            box-shadow: none !important;
-            text-shadow: none !important;
-        }
-        .high-contrast button, .high-contrast a {
-            outline: 3px solid #FFFF00 !important;
-        }
-
-        .large-cursor, .large-cursor * {
-            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="%2316a34a" stroke="white" stroke-width="2"><path d="M3 3l7 18 3-7 7-3L3 3z"/></svg>'), auto !important;
-        }
-
-        /* Estilo para Foco Visível para Navegação por Teclado */
-        a:focus, button:focus, input:focus, select:focus {
-            outline: 4px solid #ea580c !important;
-            outline-offset: 4px;
-        }
-
-        /* Animações suaves */
-        .pulse-gentle {
-            animation: pulseGentle 2.5s infinite;
-        }
-        @keyframes pulseGentle {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-        }
-
-        /* Personalização do Chat WhatsApp Simulado */
-        .chat-bg {
-            background-color: #efeae2;
-            background-image: radial-gradient(#d1d5db 1px, transparent 1px);
-            background-size: 16px 16px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Super Mobile World</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-slate-50 text-slate-800 text-lg leading-relaxed antialiased min-h-screen flex flex-col" id="appBody">
+<body>
 
-    <!-- BARRA FIXA DE ACESSIBILIDADE E AJUDA -->
-    <header class="sticky top-0 z-50 bg-slate-900 text-white shadow-xl border-b-4 border-brand-500">
-        <div class="max-w-7xl mx-auto px-4 py-2 sm:px-6 flex flex-wrap items-center justify-between gap-3">
-            
-            <!-- Marca/Logo -->
-            <a href="#inicio" class="flex items-center gap-3 group focus:outline-none" aria-label="Ir para o início do site Conecta Sênior">
-                <div class="bg-brand-500 text-white p-2.5 rounded-2xl text-2xl font-black group-hover:scale-105 transition-transform flex items-center justify-center">
-                    <i class="fa-solid fa-heart-pulse"></i>
-                </div>
-                <div>
-                    <span class="text-2xl font-extrabold tracking-wide block leading-none text-white">Conecta<span class="text-brand-500">Sênior</span></span>
-                    <span class="text-xs text-slate-300 font-medium tracking-wider uppercase">Tecnologia sem complicações</span>
-                </div>
-            </a>
+  <div id="game-container">
+    <div id="ui-overlay">
+      <span id="score-text">MOEDAS: 0</span>
+      <span id="lives-text">VIDAS: 3</span>
+    </div>
+    
+    <canvas id="gameCanvas" width="800" height="450"></canvas>
 
-            <!-- Ferramentas de Acessibilidade -->
-            <div class="flex items-center flex-wrap gap-2 sm:gap-3 bg-slate-800/80 p-2 rounded-2xl border border-slate-700">
-                <span class="text-xs font-bold text-slate-300 hidden md:inline px-2 uppercase tracking-wider">Acessibilidade:</span>
+    <div id="touch-controls">
+      <div class="dpad">
+        <button id="btn-left" class="control-btn">◀</button>
+        <button id="btn-right" class="control-btn">▶</button>
+      </div>
+      <div class="actions">
+        <button id="btn-jump" class="control-btn action-btn">A</button>
+      </div>
+    </div>
+  </div>
 
-                <!-- Ajuste de Fonte -->
-                <button onclick="changeFontSize(-1)" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-xl text-base font-bold flex items-center gap-1 transition-all active:scale-95" title="Diminuir texto" aria-label="Diminuir o tamanho do texto">
-                    <i class="fa-solid fa-minus text-xs"></i> A-
-                </button>
-                <button onclick="resetFontSize()" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-xl text-base font-bold transition-all active:scale-95" title="Tamanho Padrão" aria-label="Tamanho normal do texto">
-                    A
-                </button>
-                <button onclick="changeFontSize(1)" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-xl text-lg font-extrabold flex items-center gap-1 transition-all active:scale-95" title="Aumentar texto" aria-label="Aumentar o tamanho do texto">
-                    <i class="fa-solid fa-plus text-xs"></i> A+
-                </button>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
 
-                <!-- Modo Alto Contraste -->
-                <button onclick="toggleHighContrast()" id="btnContrast" class="bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-bold px-3 py-1.5 rounded-xl text-sm flex items-center gap-2 transition-all active:scale-95 shadow-sm" aria-label="Ativar Alto Contraste para facilitar visualização">
-                    <i class="fa-solid fa-circle-half-stroke text-lg"></i>
-                    <span class="hidden sm:inline">Alto Contraste</span>
-                </button>
+    // UI
+    const scoreText = document.getElementById('score-text');
+    const livesText = document.getElementById('lives-text');
 
-                <!-- Leitor de Voz -->
-                <button onclick="toggleVoiceReader()" id="btnVoice" class="bg-seniorBlue-500 hover:bg-seniorBlue-700 text-white font-bold px-3 py-1.5 rounded-xl text-sm flex items-center gap-2 transition-all active:scale-95 shadow-sm" aria-label="Ativar leitor de voz das páginas">
-                    <i class="fa-solid fa-volume-high text-lg" id="voiceIcon"></i>
-                    <span class="hidden sm:inline" id="voiceText">Voz: Desligada</span>
-                </button>
-            </div>
+    // Estado do Jogo
+    let score = 0;
+    let lives = 3;
+    let cameraX = 0;
+    const keys = { left: false, right: false, jump: false };
 
-            <!-- Botão de Ajuda Direta por Voz / Telefone -->
-            <button onclick="openHelpModal()" class="bg-seniorOrange-500 hover:bg-seniorOrange-600 text-white font-black px-4 py-2 rounded-2xl text-base flex items-center gap-2 shadow-lg hover:shadow-orange-500/30 transition-all pulse-gentle" aria-label="Clique aqui para pedir ajuda com a tecnologia">
-                <i class="fa-solid fa-headset text-xl"></i>
-                <span>Preciso de Ajuda</span>
-            </button>
+    // Jogador (Mario)
+    const player = {
+      x: 50,
+      y: 300,
+      width: 32,
+      height: 42,
+      vx: 0,
+      vy: 0,
+      speed: 4.5,
+      jumpForce: -11.5,
+      gravity: 0.5,
+      grounded: false,
+      color: '#e74c3c'
+    };
 
-        </div>
-    </header>
+    // Cenário
+    const levelWidth = 2400;
+    const platforms = [
+      { x: 0, y: 400, w: 900, h: 50 },
+      { x: 1000, y: 400, w: 800, h: 50 },
+      { x: 1900, y: 400, w: 600, h: 50 },
+      // Plataformas Elevadas
+      { x: 250, y: 300, w: 120, h: 20 },
+      { x: 420, y: 220, w: 120, h: 20 },
+      { x: 600, y: 300, w: 150, h: 20 },
+      { x: 1150, y: 280, w: 140, h: 20 },
+      { x: 1400, y: 200, w: 140, h: 20 },
+      { x: 1650, y: 290, w: 120, h: 20 }
+    ];
 
-    <!-- HERO / BOAS-VINDAS -->
-    <section id="inicio" class="bg-gradient-to-b from-slate-900 via-slate-800 to-slate-100 text-white pt-10 pb-16 px-4 sm:px-6">
-        <div class="max-w-5xl mx-auto text-center space-y-6">
-            
-            <div class="inline-flex items-center gap-2 bg-brand-500/20 text-brand-300 border border-brand-500/30 px-4 py-1.5 rounded-full font-semibold text-sm sm:text-base">
-                <i class="fa-solid fa-shield-heart"></i>
-                <span>Espaço 100% Seguro para Você Aprender sem Medo</span>
-            </div>
+    let coins = [
+      { x: 280, y: 260, collected: false },
+      { x: 450, y: 180, collected: false },
+      { x: 650, y: 260, collected: false },
+      { x: 1200, y: 240, collected: false },
+      { x: 1450, y: 160, collected: false },
+      { x: 1700, y: 250, collected: false }
+    ];
 
-            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
-                A tecnologia agora ficou <span class="text-brand-500 underline decoration-brand-500 underline-offset-8">simples e amiga</span> do seu dia a dia.
-            </h1>
+    let enemies = [
+      { x: 450, y: 370, w: 30, h: 30, vx: -1.5, minX: 250, maxX: 650, alive: true },
+      { x: 1250, y: 370, w: 30, h: 30, vx: -2, minX: 1050, maxX: 1500, alive: true }
+    ];
 
-            <p class="text-lg sm:text-2xl text-slate-200 max-w-3xl mx-auto font-normal">
-                Aqui você aprende a usar o celular, WhatsApp, PIX e a navegar na internet com calma, passos grandes e explicação clara.
-            </p>
+    const flag = { x: 2300, y: 200, w: 20, h: 200 };
 
-            <!-- Player de Boas-Vindas por Áudio -->
-            <div class="bg-slate-800/90 border border-slate-700 p-4 sm:p-6 rounded-3xl max-w-2xl mx-auto shadow-2xl flex flex-col sm:flex-row items-center gap-4 text-left">
-                <button onclick="speakText('Bem-vindo ao Conecta Sênior! Este site foi feito com muito carinho para ajudar você a mexer no celular e no computador com segurança. Escolha abaixo o que você deseja praticar hoje.')" class="w-16 h-16 rounded-2xl bg-brand-500 hover:bg-brand-600 text-white flex items-center justify-center text-2xl flex-shrink-0 shadow-lg transition-transform active:scale-95" aria-label="Ouvir mensagem de boas-vindas em áudio">
-                    <i class="fa-solid fa-play"></i>
-                </button>
-                <div>
-                    <h2 class="font-bold text-xl text-white flex items-center gap-2">
-                        <i class="fa-solid fa-bullhorn text-brand-400"></i> Clique para ouvir nossa mensagem de boas-vindas
-                    </h2>
-                    <p class="text-sm text-slate-300">Não precisa ter pressa. Você pode errar quantas vezes quiser nos nossos treinos!</p>
-                </div>
-            </div>
+    // Suporte a Teclado (PC)
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = true;
+      if (e.key === 'ArrowRight' || e.key === 'd') keys.right = true;
+      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') keys.jump = true;
+    });
 
-            <!-- Atalhos Principais com Botões Grandes -->
-            <div class="pt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
-                <a href="#simuladores" class="bg-white text-slate-900 hover:bg-brand-50 p-5 rounded-3xl font-extrabold text-xl shadow-lg border-2 border-brand-500 flex items-center justify-center gap-3 transition-all hover:-translate-y-1">
-                    <i class="fa-solid fa-gamepad text-brand-600 text-3xl"></i>
-                    <span> Treinar Prática</span>
-                </a>
-                <a href="#antigolpes" class="bg-white text-slate-900 hover:bg-amber-50 p-5 rounded-3xl font-extrabold text-xl shadow-lg border-2 border-amber-500 flex items-center justify-center gap-3 transition-all hover:-translate-y-1">
-                    <i class="fa-solid fa-shield-halved text-amber-600 text-3xl"></i>
-                    <span> Guia Anti-Golpes</span>
-                </a>
-                <a href="#dicionario" class="bg-white text-slate-900 hover:bg-sky-50 p-5 rounded-3xl font-extrabold text-xl shadow-lg border-2 border-sky-500 flex items-center justify-center gap-3 transition-all hover:-translate-y-1">
-                    <i class="fa-solid fa-book-open text-sky-600 text-3xl"></i>
-                    <span> Dicionário Tech</span>
-                </a>
-            </div>
+    window.addEventListener('keyup', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = false;
+      if (e.key === 'ArrowRight' || e.key === 'd') keys.right = false;
+      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') keys.jump = false;
+    });
 
-        </div>
-    </section>
+    // Suporte a Controles Touch (Celular)
+    function bindTouchButton(id, keyName) {
+      const btn = document.getElementById(id);
+      const start = (e) => { e.preventDefault(); keys[keyName] = true; };
+      const end = (e) => { e.preventDefault(); keys[keyName] = false; };
+      btn.addEventListener('touchstart', start);
+      btn.addEventListener('touchend', end);
+      btn.addEventListener('mousedown', start);
+      btn.addEventListener('mouseup', end);
+    }
 
-    <!-- SEÇÃO DE SIMULADORES INTERATIVOS DE APRENDIZADO -->
-    <section id="simuladores" class="py-16 px-4 sm:px-6 max-w-7xl mx-auto w-full">
-        <div class="text-center mb-10 space-y-3">
-            <span class="bg-brand-100 text-brand-800 text-sm font-extrabold px-4 py-1.5 rounded-full uppercase tracking-widest inline-block">
-                Aprenda Praticando
-            </span>
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900">Simuladores Fictícios e Seguros</h2>
-            <p class="text-xl text-slate-600 max-w-2xl mx-auto">
-                Treine as funções do celular aqui dentro! É um ambiente seguro, nada é real e nada é cobrado.
-            </p>
-        </div>
+    bindTouchButton('btn-left', 'left');
+    bindTouchButton('btn-right', 'right');
+    bindTouchButton('btn-jump', 'jump');
 
-        <!-- Abas dos Simuladores -->
-        <div class="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
-            <div class="flex flex-wrap border-b border-slate-200 bg-slate-100/80 p-2 gap-2">
-                <button onclick="switchTab('whatsapp')" id="tab-whatsapp" class="sim-tab flex-1 min-w-[180px] py-4 px-6 rounded-2xl font-extrabold text-lg flex items-center justify-center gap-3 transition-all bg-brand-600 text-white shadow-md">
-                    <i class="fa-brands fa-whatsapp text-2xl"></i> Treinar WhatsApp
-                </button>
-                <button onclick="switchTab('pix')" id="tab-pix" class="sim-tab flex-1 min-w-[180px] py-4 px-6 rounded-2xl font-extrabold text-lg flex items-center justify-center gap-3 transition-all text-slate-700 hover:bg-slate-200">
-                    <i class="fa-solid fa-pix text-2xl"></i> Treinar PIX Seguro
-                </button>
-                <button onclick="switchTab('busca')" id="tab-busca" class="sim-tab flex-1 min-w-[180px] py-4 px-6 rounded-2xl font-extrabold text-lg flex items-center justify-center gap-3 transition-all text-slate-700 hover:bg-slate-200">
-                    <i class="fa-solid fa-magnifying-glass text-2xl"></i> Pesquisar na Internet
-                </button>
-            </div>
+    function resetPlayer() {
+      player.x = 50;
+      player.y = 300;
+      player.vx = 0;
+      player.vy = 0;
+    }
 
-            <!-- Conteúdo da Aba 1: SIMULADOR DE WHATSAPP -->
-            <div id="content-whatsapp" class="p-4 sm:p-8">
-                <div class="max-w-md mx-auto bg-white rounded-3xl shadow-2xl border-4 border-slate-800 overflow-hidden">
-                    
-                    <!-- Topo do WhatsApp -->
-                    <div class="bg-emerald-700 text-white p-4 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="relative">
-                                <img src="https://placehold.co/100x100/15803d/ffffff?text=Neto" alt="Foto do Neto" class="w-12 h-12 rounded-full border-2 border-white object-cover">
-                                <span class="w-3.5 h-3.5 bg-green-400 border-2 border-white rounded-full absolute bottom-0 right-0"></span>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg leading-tight">Neto Pedrinho</h3>
-                                <p class="text-xs text-emerald-100">Online agora</p>
-                            </div>
-                        </div>
-                        <button onclick="speakText('Este é o simulador de conversa do WhatsApp. Escolha uma das mensagens rápidas abaixo para mandar para o Pedrinho.')" class="text-white hover:text-emerald-200 p-2 text-xl" title="Instruções em áudio">
-                            <i class="fa-solid fa-circle-question"></i>
-                        </button>
-                    </div>
+    // Atualização de Física e Lógica
+    function update() {
+      if (keys.left) player.vx = -player.speed;
+      else if (keys.right) player.vx = player.speed;
+      else player.vx = 0;
 
-                    <!-- Mensagens do Chat -->
-                    <div id="chatMessages" class="chat-bg h-80 p-4 overflow-y-auto space-y-3 text-sm sm:text-base flex flex-col">
-                        <div class="bg-white rounded-2xl p-3 shadow-sm max-w-[80%] self-start rounded-tl-none border border-slate-200">
-                            <p class="font-semibold text-slate-800">Oi, Vovó! Tudo bem com você? Tava com saudades! ❤️</p>
-                            <span class="text-[10px] text-slate-400 block text-right mt-1">10:15</span>
-                        </div>
-                    </div>
+      if (keys.jump && player.grounded) {
+        player.vy = player.jumpForce;
+        player.grounded = false;
+      }
 
-                    <!-- Sugestões de Respostas Rápidas para o Idoso Clicar -->
-                    <div class="p-3 bg-slate-100 border-t border-slate-200 space-y-2">
-                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Toque para responder:</p>
-                        <div class="grid grid-cols-1 gap-2">
-                            <button onclick="sendChatMessage('Oi, meu querido! Estou bem, e você como está?')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 font-medium p-2.5 rounded-xl text-left transition-all active:scale-95 text-base flex items-center justify-between">
-                                <span>"Oi, querido! Estou bem, e você?"</span>
-                                <i class="fa-solid fa-paper-plane text-emerald-700"></i>
-                            </button>
-                            <button onclick="sendChatMessage('Me manda uma foto sua! Beijos do vovô/vovó!')" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 font-medium p-2.5 rounded-xl text-left transition-all active:scale-95 text-base flex items-center justify-between">
-                                <span>"Me manda uma foto sua! Beijos!"</span>
-                                <i class="fa-solid fa-camera text-emerald-700"></i>
-                            </button>
-                            <button onclick="sendMockAudio()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 font-medium p-2.5 rounded-xl text-left transition-all active:scale-95 text-base flex items-center justify-between">
-                                <span><i class="fa-solid fa-microphone text-amber-700 mr-2"></i> Simular envio de Áudio por Voz</span>
-                                <i class="fa-solid fa-play text-amber-700"></i>
-                            </button>
-                        </div>
-                    </div>
+      player.vy += player.gravity;
+      player.x += player.vx;
 
-                </div>
-            </div>
+      if (player.x < 0) player.x = 0;
 
-            <!-- Conteúdo da Aba 2: SIMULADOR DE PIX -->
-            <div id="content-pix" class="p-4 sm:p-8 hidden">
-                <div class="max-w-lg mx-auto bg-slate-900 text-white p-6 rounded-3xl shadow-2xl border-4 border-emerald-500 space-y-6">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                        <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-building-columns text-emerald-400 text-3xl"></i>
-                            <div>
-                                <h3 class="font-extrabold text-xl">Banco Simulado Seguro</h3>
-                                <p class="text-xs text-slate-400">Saldo fictício disponível: R$ 1.500,00</p>
-                            </div>
-                        </div>
-                        <span class="bg-emerald-500/20 text-emerald-300 text-xs font-bold px-2.5 py-1 rounded-full">Simulador</span>
-                    </div>
+      // Colisão Vertical e Plataformas
+      player.grounded = false;
+      player.y += player.vy;
 
-                    <div class="bg-slate-800 p-4 rounded-2xl space-y-3">
-                        <label class="block font-bold text-sm text-slate-300">Digite a Chave PIX de Teste (Ex: celular ou CPF):</label>
-                        <input type="text" id="pixKeyInput" placeholder="Ex: 11999998888" class="w-full p-3 rounded-xl bg-slate-900 text-white border border-slate-700 text-lg focus:border-emerald-400 outline-none">
-                        
-                        <label class="block font-bold text-sm text-slate-300 pt-2">Valor da Transferência:</label>
-                        <input type="number" id="pixAmountInput" placeholder="R$ 10,00" class="w-full p-3 rounded-xl bg-slate-900 text-white border border-slate-700 text-lg focus:border-emerald-400 outline-none">
-                    </div>
+      for (let p of platforms) {
+        if (
+          player.x < p.x + p.w &&
+          player.x + player.width > p.x &&
+          player.y + player.height > p.y &&
+          player.y < p.y + p.h
+        ) {
+          if (player.vy > 0 && player.y + player.height - player.vy <= p.y + 12) {
+            player.y = p.y - player.height;
+            player.vy = 0;
+            player.grounded = true;
+          }
+        }
+      }
 
-                    <button onclick="processPixTransfer()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black py-4 rounded-2xl text-xl shadow-lg transition-transform active:scale-95 flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-lock"></i> Avançar com Segurança
-                    </button>
+      // Queda nos Buracos
+      if (player.y > canvas.height + 100) {
+        handleDeath();
+      }
 
-                    <!-- Feedback do Pix -->
-                    <div id="pixFeedback" class="hidden p-4 bg-emerald-900/50 border border-emerald-500 rounded-2xl text-sm space-y-2">
-                        <!-- Gerado via JS -->
-                    </div>
-                </div>
-            </div>
+      // Câmera Acompanhando o Jogador
+      cameraX = player.x - canvas.width / 3;
+      if (cameraX < 0) cameraX = 0;
+      if (cameraX > levelWidth - canvas.width) cameraX = levelWidth - canvas.width;
 
-            <!-- Conteúdo da Aba 3: SIMULADOR DE BUSCA GOOGLE -->
-            <div id="content-busca" class="p-4 sm:p-8 hidden">
-                <div class="max-w-2xl mx-auto space-y-6">
-                    <div class="text-center space-y-2">
-                        <h3 class="font-black text-2xl text-slate-800">Aprenda a Pesquisar na Internet</h3>
-                        <p class="text-slate-600">Digite o que quer aprender ou escolha um tema abaixo:</p>
-                    </div>
+      // Coleta de Moedas
+      coins.forEach(c => {
+        if (!c.collected &&
+            player.x < c.x + 20 && player.x + player.width > c.x &&
+            player.y < c.y + 20 && player.y + player.height > c.y) {
+          c.collected = true;
+          score += 100;
+          scoreText.innerText = `MOEDAS: ${score}`;
+        }
+      });
 
-                    <div class="flex gap-2">
-                        <input type="text" id="searchInput" placeholder="Ex: Receita de bolo de fubá fofinho..." class="flex-1 p-4 rounded-2xl border-2 border-slate-300 text-lg focus:border-sky-500 outline-none shadow-sm">
-                        <button onclick="executeSearch()" class="bg-sky-600 hover:bg-sky-700 text-white px-6 py-4 rounded-2xl font-bold text-lg flex items-center gap-2 shadow-md">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                            <span class="hidden sm:inline">Buscar</span>
-                        </button>
-                    </div>
+      // Lógica dos Inimigos
+      enemies.forEach(e => {
+        if (!e.alive) return;
 
-                    <div class="flex flex-wrap gap-2 justify-center">
-                        <button onclick="quickSearch('Receita de Pão Caseiro')" class="bg-sky-100 text-sky-800 font-bold px-4 py-2 rounded-full text-sm hover:bg-sky-200">🎂 Receita de Pão</button>
-                        <button onclick="quickSearch('Previsão do tempo para amanhã')" class="bg-sky-100 text-sky-800 font-bold px-4 py-2 rounded-full text-sm hover:bg-sky-200">☀️ Previsão do Tempo</button>
-                        <button onclick="quickSearch('Como cuidar de plantas na varanda')" class="bg-sky-100 text-sky-800 font-bold px-4 py-2 rounded-full text-sm hover:bg-sky-200">🪴 Cuidar de Plantas</button>
-                    </div>
+        e.x += e.vx;
+        if (e.x <= e.minX || e.x >= e.maxX) e.vx *= -1;
 
-                    <div id="searchResults" class="bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
-                        <p class="text-slate-500 text-center italic">Digite algo acima ou clique em uma das sugestões para ver o resultado simulado!</p>
-                    </div>
-                </div>
-            </div>
+        if (
+          player.x < e.x + e.w &&
+          player.x + player.width > e.x &&
+          player.y < e.y + e.h &&
+          player.y + player.height > e.y
+        ) {
+          // Pular na cabeça do inimigo
+          if (player.vy > 0 && player.y + player.height - player.vy <= e.y + 12) {
+            e.alive = false;
+            player.vy = player.jumpForce * 0.6;
+            score += 200;
+            scoreText.innerText = `MOEDAS: ${score}`;
+          } else {
+            handleDeath();
+          }
+        }
+      });
 
-        </div>
-    </section>
+      // Vitória ao Chegar no Mastro Final
+      if (player.x + player.width >= flag.x) {
+        alert('🎉 Você completou a fase! Parabéns!');
+        resetPlayer();
+      }
+    }
 
-    <!-- SEÇÃO ANTIGOLPES E SEGURANÇA DIGITAL -->
-    <section id="antigolpes" class="py-16 bg-amber-50 border-y border-amber-200 px-4 sm:px-6">
-        <div class="max-w-7xl mx-auto space-y-12">
-            
-            <div class="text-center space-y-3">
-                <span class="bg-amber-200 text-amber-900 font-extrabold text-sm px-4 py-1.5 rounded-full uppercase tracking-wider inline-block">
-                    Proteção em Primeiro Lugar
-                </span>
-                <h2 class="text-3xl sm:text-5xl font-black text-slate-900">Guia Pr
+    function handleDeath() {
+      lives--;
+      livesText.innerText = `VIDAS: ${lives}`;
+      if (lives <= 0) {
+        alert('💥 Game Over! Reiniciando...');
+        lives = 3;
+        score = 0;
+        scoreText.innerText = 'MOEDAS: 0';
+        livesText.innerText = 'VIDAS: 3';
+        coins.forEach(c => c.collected = false);
+        enemies.forEach(e => e.alive = true);
+      }
+      resetPlayer();
+    }
+
+    // Renderização dos Gráficos
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.save();
+      ctx.translate(-cameraX, 0);
+
+      // Fundo (Céu)
+      ctx.fillStyle = '#5c94fc';
+      ctx.fillRect(cameraX, 0, canvas.width, canvas.height);
+
+      // Plataformas
+      platforms.forEach(p => {
+        ctx.fillStyle = '#2ecc71';
+        ctx.fillRect(p.x, p.y, p.w, p.h);
+        ctx.fillStyle = '#27ae60';
+        ctx.fillRect(p.x, p.y + 6, p.w, p.h - 6);
+      });
+
+      // Moedas
+      coins.forEach(c => {
+        if (!c.collected) {
+          ctx.fillStyle = '#f1c40f';
+          ctx.beginPath();
+          ctx.arc(c.x + 10, c.y + 10, 8, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+
+      // Inimigos
+      enemies.forEach(e => {
+        if (e.alive) {
+          ctx.fillStyle = '#8e44ad';
+          ctx.fillRect(e.x, e.y, e.w, e.h);
+        }
+      });
+
+      // Bandera / Linha de Chegada
+      ctx.fillStyle = '#e67e22';
+      ctx.fillRect(flag.x, flag.y, flag.w, flag.h);
+      ctx.fillStyle = '#f1c40f';
+      ctx.beginPath();
+      ctx.moveTo(flag.x + flag.w, flag.y);
+      ctx.lineTo(flag.x + flag.w + 35, flag.y + 20);
+      ctx.lineTo(flag.x + flag.w, flag.y + 40);
+      ctx.fill();
+
+      // Jogador
+      ctx.fillStyle = player.color;
+      ctx.fillRect(player.x, player.y, player.width, player.height);
+      // Detalhe dos Olhos
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(player.x + (player.vx >= 0 ? 20 : 4), player.y + 8, 6, 8);
+
+      ctx.restore();
+    }
+
+    function gameLoop() {
+      update();
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+  </script>
+</body>
+</html>
