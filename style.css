@@ -1,0 +1,204 @@
+/* Reset global e configurações para toque mobile */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+body {
+  background-color: #0b0e14;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+  color: #fff;
+}
+
+/* Container do Jogo */
+#game-wrapper {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: 960px;
+  max-height: 540px;
+  background-color: #000;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HUD Superior (Moedas, Vidas e Pontuação) */
+#hud {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+  pointer-events: none;
+}
+
+.hud-stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+}
+
+.hud-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
+}
+
+/* Canvas principal do jogo */
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background-color: #5c94fc;
+}
+
+/* Telas Sobrepostas (Menu, Game Over, Vitória) */
+.screen-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(11, 14, 20, 0.88);
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 30;
+  text-align: center;
+  padding: 20px;
+  transition: opacity 0.3s ease;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.screen-title {
+  font-size: 38px;
+  font-weight: 900;
+  color: #f1c40f;
+  text-shadow: 3px 3px 0px #c0392b, 6px 6px 0px #000;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.screen-subtitle {
+  font-size: 16px;
+  color: #ecf0f1;
+  margin-bottom: 24px;
+  max-width: 480px;
+  line-height: 1.4;
+}
+
+.btn-main {
+  background: linear-gradient(180deg, #2ecc71 0%, #27ae60 100%);
+  color: #fff;
+  border: none;
+  padding: 14px 36px;
+  font-size: 20px;
+  font-weight: 800;
+  border-radius: 40px;
+  cursor: pointer;
+  box-shadow: 0 6px 0 #1e8449, 0 10px 20px rgba(0, 0, 0, 0.4);
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-main:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #1e8449, 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.controls-hint {
+  margin-top: 24px;
+  font-size: 13px;
+  color: #bdc3c7;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 10px 18px;
+  border-radius: 8px;
+}
+
+/* Controles Virtuais Touch para Celular */
+#touch-bar {
+  position: absolute;
+  bottom: 14px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 24px;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.touch-group {
+  display: flex;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+.t-btn {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  color: #fff;
+  font-size: 22px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  cursor: pointer;
+  touch-action: none;
+}
+
+.t-btn:active {
+  background: rgba(255, 255, 255, 0.45);
+  transform: scale(0.92);
+}
+
+.t-btn-jump {
+  background: rgba(46, 204, 113, 0.65);
+  border-color: rgba(255, 255, 255, 0.8);
+  width: 64px;
+  height: 64px;
+}
+
+.t-btn-fire {
+  background: rgba(231, 76, 60, 0.65);
+  border-color: rgba(255, 255, 255, 0.8);
+  width: 58px;
+  height: 58px;
+  align-self: flex-end;
+}
