@@ -2,285 +2,1160 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Super Mobile World</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Super Mobile World Pro</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    body {
+      background-color: #0b0e14;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    #game-wrapper {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      max-width: 960px;
+      max-height: 540px;
+      background-color: #000;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.8);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top HUD Overlay */
+    #hud {
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      font-weight: 800;
+      font-size: 16px;
+      letter-spacing: 1px;
+      text-shadow: 2px 2px 0px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+      pointer-events: none;
+    }
+
+    .hud-stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(4px);
+    }
+
+    .hud-icon {
+      width: 18px;
+      height: 18px;
+      display: inline-block;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background-color: #5c94fc;
+    }
+
+    /* Screen Overlays (Start, Game Over, Win) */
+    .screen-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(11, 14, 20, 0.88);
+      backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 30;
+      text-align: center;
+      padding: 20px;
+      transition: opacity 0.3s ease;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .screen-title {
+      font-size: 38px;
+      font-weight: 900;
+      color: #f1c40f;
+      text-shadow: 3px 3px 0px #c0392b, 6px 6px 0px #000;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .screen-subtitle {
+      font-size: 16px;
+      color: #ecf0f1;
+      margin-bottom: 24px;
+      max-width: 480px;
+      line-height: 1.4;
+    }
+
+    .btn-main {
+      background: linear-gradient(180deg, #2ecc71 0%, #27ae60 100%);
+      color: #fff;
+      border: none;
+      padding: 14px 36px;
+      font-size: 20px;
+      font-weight: 800;
+      border-radius: 40px;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #1e8449, 0 10px 20px rgba(0, 0, 0, 0.4);
+      transition: all 0.15s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-main:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #1e8449, 0 4px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .controls-hint {
+      margin-top: 24px;
+      font-size: 13px;
+      color: #bdc3c7;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 10px 18px;
+      border-radius: 8px;
+    }
+
+    /* On-screen Touch Controls */
+    #touch-bar {
+      position: absolute;
+      bottom: 14px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 24px;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    .touch-group {
+      display: flex;
+      gap: 12px;
+      pointer-events: auto;
+    }
+
+    .t-btn {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.22);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      color: #fff;
+      font-size: 22px;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      cursor: pointer;
+      touch-action: none;
+    }
+
+    .t-btn:active {
+      background: rgba(255, 255, 255, 0.45);
+      transform: scale(0.92);
+    }
+
+    .t-btn-jump {
+      background: rgba(46, 204, 113, 0.65);
+      border-color: rgba(255, 255, 255, 0.8);
+      width: 64px;
+      height: 64px;
+    }
+
+    .t-btn-fire {
+      background: rgba(231, 76, 60, 0.65);
+      border-color: rgba(255, 255, 255, 0.8);
+      width: 58px;
+      height: 58px;
+      align-self: flex-end;
+    }
+
+    @media (min-width: 850px) {
+      /* Show subtle touch controls on desktop if wanted, or keep layout uniform */
+    }
+  </style>
 </head>
 <body>
 
-  <div id="game-container">
-    <div id="ui-overlay">
-      <span id="score-text">MOEDAS: 0</span>
-      <span id="lives-text">VIDAS: 3</span>
+  <div id="game-wrapper">
+    <!-- Top HUD -->
+    <div id="hud">
+      <div class="hud-stat">
+        <span style="color:#f1c40f;">🪙</span>
+        <span id="hud-coins">00</span>
+      </div>
+      <div class="hud-stat">
+        <span style="color:#e74c3c;">❤️</span>
+        <span id="hud-lives">3</span>
+      </div>
+      <div class="hud-stat">
+        <span style="color:#2ecc71;">⭐</span>
+        <span id="hud-score">000000</span>
+      </div>
     </div>
-    
+
+    <!-- Canvas principal -->
     <canvas id="gameCanvas" width="800" height="450"></canvas>
 
-    <div id="touch-controls">
-      <div class="dpad">
-        <button id="btn-left" class="control-btn">◀</button>
-        <button id="btn-right" class="control-btn">▶</button>
+    <!-- Tela do Menu Inicial -->
+    <div id="menu-screen" class="screen-overlay">
+      <div class="screen-title">Super Mobile World</div>
+      <div class="screen-subtitle">Uma aventura no estilo plataforma retrô com power-ups, inimigos especiais e muita ação!</div>
+      <button id="btn-start" class="btn-main">JOGAR AGORA</button>
+      <div class="controls-hint">
+        <strong>Controles PC:</strong> A/D ou Setas (Mover) | W/Espaço (Pular) | F ou X (Atirar Fogo)
       </div>
-      <div class="actions">
-        <button id="btn-jump" class="control-btn action-btn">A</button>
+    </div>
+
+    <!-- Tela de Game Over -->
+    <div id="gameover-screen" class="screen-overlay hidden">
+      <div class="screen-title" style="color: #e74c3c; text-shadow: 3px 3px 0 #c0392b;">GAME OVER</div>
+      <div class="screen-subtitle">Sua jornada terminou aqui, mas você pode tentar novamente!</div>
+      <button id="btn-restart" class="btn-main">TENTAR NOVAMENTE</button>
+    </div>
+
+    <!-- Tela de Vitória -->
+    <div id="win-screen" class="screen-overlay hidden">
+      <div class="screen-title" style="color: #2ecc71; text-shadow: 3px 3px 0 #27ae60;">FASE CONCLUÍDA!</div>
+      <div class="screen-subtitle" id="win-stats">Você resgatou a bandeira e concluiu a fase com sucesso!</div>
+      <button id="btn-win-restart" class="btn-main">JOGAR NOVAMENTE</button>
+    </div>
+
+    <!-- Controles de Toque para Mobile -->
+    <div id="touch-bar">
+      <div class="touch-group">
+        <div id="btn-left" class="t-btn">◀</div>
+        <div id="btn-right" class="t-btn">▶</div>
+      </div>
+      <div class="touch-group">
+        <div id="btn-fire" class="t-btn t-btn-fire">B</div>
+        <div id="btn-jump" class="t-btn t-btn-jump">A</div>
       </div>
     </div>
   </div>
 
   <script>
+    // Configurações do Canvas e Contexto
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    // UI
-    const scoreText = document.getElementById('score-text');
-    const livesText = document.getElementById('lives-text');
+    // Referências do HUD e Overlays
+    const hudCoins = document.getElementById('hud-coins');
+    const hudLives = document.getElementById('hud-lives');
+    const hudScore = document.getElementById('hud-score');
+    const menuScreen = document.getElementById('menu-screen');
+    const gameoverScreen = document.getElementById('gameover-screen');
+    const winScreen = document.getElementById('win-screen');
+    const winStats = document.getElementById('win-stats');
 
-    // Estado do Jogo
-    let score = 0;
-    let lives = 3;
+    // Botões
+    const btnStart = document.getElementById('btn-start');
+    const btnRestart = document.getElementById('btn-restart');
+    const btnWinRestart = document.getElementById('btn-win-restart');
+
+    // Estado Geral do Jogo
+    let gameState = 'MENU'; // 'MENU', 'PLAYING', 'GAMEOVER', 'WIN'
     let cameraX = 0;
-    const keys = { left: false, right: false, jump: false };
+    let score = 0;
+    let coins = 0;
+    let lives = 3;
+    let gameFrame = 0;
 
-    // Jogador (Mario)
-    const player = {
-      x: 50,
-      y: 300,
-      width: 32,
-      height: 42,
-      vx: 0,
-      vy: 0,
-      speed: 4.5,
-      jumpForce: -11.5,
-      gravity: 0.5,
-      grounded: false,
-      color: '#e74c3c'
+    // Teclas de Controle
+    const keys = {
+      left: false,
+      right: false,
+      jump: false,
+      fire: false,
+      firePressed: false
     };
 
-    // Cenário
-    const levelWidth = 2400;
-    const platforms = [
-      { x: 0, y: 400, w: 900, h: 50 },
-      { x: 1000, y: 400, w: 800, h: 50 },
-      { x: 1900, y: 400, w: 600, h: 50 },
-      // Plataformas Elevadas
-      { x: 250, y: 300, w: 120, h: 20 },
-      { x: 420, y: 220, w: 120, h: 20 },
-      { x: 600, y: 300, w: 150, h: 20 },
-      { x: 1150, y: 280, w: 140, h: 20 },
-      { x: 1400, y: 200, w: 140, h: 20 },
-      { x: 1650, y: 290, w: 120, h: 20 }
-    ];
-
-    let coins = [
-      { x: 280, y: 260, collected: false },
-      { x: 450, y: 180, collected: false },
-      { x: 650, y: 260, collected: false },
-      { x: 1200, y: 240, collected: false },
-      { x: 1450, y: 160, collected: false },
-      { x: 1700, y: 250, collected: false }
-    ];
-
-    let enemies = [
-      { x: 450, y: 370, w: 30, h: 30, vx: -1.5, minX: 250, maxX: 650, alive: true },
-      { x: 1250, y: 370, w: 30, h: 30, vx: -2, minX: 1050, maxX: 1500, alive: true }
-    ];
-
-    const flag = { x: 2300, y: 200, w: 20, h: 200 };
-
-    // Suporte a Teclado (PC)
+    // Suporte a Teclado
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = true;
-      if (e.key === 'ArrowRight' || e.key === 'd') keys.right = true;
-      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') keys.jump = true;
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = true;
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = true;
+      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ') keys.jump = true;
+      if (e.key === 'f' || e.key === 'F' || e.key === 'x' || e.key === 'X') {
+        if (!keys.fire) keys.firePressed = true;
+        keys.fire = true;
+      }
     });
 
     window.addEventListener('keyup', (e) => {
-      if (e.key === 'ArrowLeft' || e.key === 'a') keys.left = false;
-      if (e.key === 'ArrowRight' || e.key === 'd') keys.right = false;
-      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === ' ') keys.jump = false;
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') keys.left = false;
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = false;
+      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ') keys.jump = false;
+      if (e.key === 'f' || e.key === 'F' || e.key === 'x' || e.key === 'X') keys.fire = false;
     });
 
-    // Suporte a Controles Touch (Celular)
-    function bindTouchButton(id, keyName) {
+    // Configuração de Controles Touch Mobile
+    function setupTouchButton(id, keyName, isActionTrigger = false) {
       const btn = document.getElementById(id);
-      const start = (e) => { e.preventDefault(); keys[keyName] = true; };
-      const end = (e) => { e.preventDefault(); keys[keyName] = false; };
-      btn.addEventListener('touchstart', start);
-      btn.addEventListener('touchend', end);
+      
+      const start = (e) => {
+        e.preventDefault();
+        if (isActionTrigger && !keys[keyName]) {
+          keys[keyName + 'Pressed'] = true;
+        }
+        keys[keyName] = true;
+      };
+
+      const end = (e) => {
+        e.preventDefault();
+        keys[keyName] = false;
+      };
+
+      btn.addEventListener('touchstart', start, { passive: false });
+      btn.addEventListener('touchend', end, { passive: false });
       btn.addEventListener('mousedown', start);
       btn.addEventListener('mouseup', end);
     }
 
-    bindTouchButton('btn-left', 'left');
-    bindTouchButton('btn-right', 'right');
-    bindTouchButton('btn-jump', 'jump');
+    setupTouchButton('btn-left', 'left');
+    setupTouchButton('btn-right', 'right');
+    setupTouchButton('btn-jump', 'jump');
+    setupTouchButton('btn-fire', 'fire', true);
 
-    function resetPlayer() {
-      player.x = 50;
-      player.y = 300;
-      player.vx = 0;
-      player.vy = 0;
+    // ==========================================
+    // ENTIDADES DO JOGO
+    // ==========================================
+
+    // Objeto do Jogador (Mario)
+    const player = {
+      x: 60,
+      y: 300,
+      w: 30,
+      h: 38,
+      vx: 0,
+      vy: 0,
+      speed: 4.8,
+      jumpForce: -12.5,
+      gravity: 0.55,
+      grounded: false,
+      facing: 'right',
+      powerState: 'small', // 'small', 'super', 'fire'
+      invulnerable: 0,
+      
+      reset() {
+        this.x = 60;
+        this.y = 300;
+        this.vx = 0;
+        this.vy = 0;
+        this.powerState = 'small';
+        this.w = 30;
+        this.h = 36;
+        this.invulnerable = 0;
+        this.facing = 'right';
+      },
+
+      grow() {
+        if (this.powerState === 'small') {
+          this.powerState = 'super';
+          this.y -= 10;
+          this.h = 48;
+        } else if (this.powerState === 'super') {
+          this.powerState = 'fire';
+        }
+      },
+
+      hit() {
+        if (this.invulnerable > 0) return;
+
+        if (this.powerState === 'fire') {
+          this.powerState = 'super';
+          this.invulnerable = 60;
+        } else if (this.powerState === 'super') {
+          this.powerState = 'small';
+          this.h = 36;
+          this.invulnerable = 60;
+        } else {
+          handlePlayerDeath();
+        }
+      }
+    };
+
+    // Coleções da Fase
+    const levelWidth = 3200;
+    let platforms = [];
+    let blocks = [];
+    let coinsList = [];
+    let powerups = [];
+    let enemies = [];
+    let fireballs = [];
+    let pipes = [];
+    let flag = { x: 3050, y: 150, w: 10, h: 250 };
+
+    // Inicialização da Fase
+    function buildLevel() {
+      // Plataformas de Chão com vãos
+      platforms = [
+        { x: 0, y: 400, w: 900, h: 60 },
+        { x: 980, y: 400, w: 800, h: 60 },
+        { x: 1860, y: 400, w: 650, h: 60 },
+        { x: 2580, y: 400, w: 620, h: 60 }
+      ];
+
+      // Canos Verdes (Pipes)
+      pipes = [
+        { x: 350, y: 320, w: 52, h: 80, plant: true },
+        { x: 1150, y: 300, w: 52, h: 100, plant: true },
+        { x: 2050, y: 330, w: 52, h: 70, plant: false },
+        { x: 2720, y: 310, w: 52, h: 90, plant: true }
+      ];
+
+      // Caixas de Bloco & Interrogação "❓"
+      blocks = [
+        // x, y, type ('question', 'brick'), content ('mushroom', 'fireflower', 'coin', 'empty'), hit
+        { x: 220, y: 270, w: 32, h: 32, type: 'question', content: 'coin', hit: false, bounce: 0 },
+        { x: 252, y: 270, w: 32, h: 32, type: 'brick', content: 'empty', hit: false, bounce: 0 },
+        { x: 284, y: 270, w: 32, h: 32, type: 'question', content: 'mushroom', hit: false, bounce: 0 },
+        { x: 316, y: 270, w: 32, h: 32, type: 'brick', content: 'empty', hit: false, bounce: 0 },
+
+        // Elevação 2
+        { x: 600, y: 240, w: 32, h: 32, type: 'question', content: 'fireflower', hit: false, bounce: 0 },
+        { x: 632, y: 240, w: 32, h: 32, type: 'brick', content: 'empty', hit: false, bounce: 0 },
+        { x: 780, y: 270, w: 32, h: 32, type: 'question', content: 'coin', hit: false, bounce: 0 },
+
+        // Seção Intermediária
+        { x: 1300, y: 260, w: 32, h: 32, type: 'question', content: 'mushroom', hit: false, bounce: 0 },
+        { x: 1332, y: 260, w: 32, h: 32, type: 'brick', content: 'empty', hit: false, bounce: 0 },
+        { x: 1364, y: 260, w: 32, h: 32, type: 'question', content: 'fireflower', hit: false, bounce: 0 },
+
+        { x: 1600, y: 220, w: 32, h: 32, type: 'brick', content: 'empty', hit: false, bounce: 0 },
+        { x: 1632, y: 220, w: 32, h: 32, type: 'question', content: 'coin', hit: false, bounce: 0 },
+
+        // Seção Final
+        { x: 2200, y: 250, w: 32, h: 32, type: 'question', content: 'mushroom', hit: false, bounce: 0 },
+        { x: 2350, y: 220, w: 32, h: 32, type: 'question', content: 'fireflower', hit: false, bounce: 0 }
+      ];
+
+      // Moedas flutuantes
+      coinsList = [
+        { x: 450, y: 350, collected: false },
+        { x: 480, y: 350, collected: false },
+        { x: 510, y: 350, collected: false },
+        { x: 820, y: 220, collected: false },
+        { x: 850, y: 220, collected: false },
+        { x: 1450, y: 330, collected: false },
+        { x: 1480, y: 300, collected: false },
+        { x: 1510, y: 330, collected: false },
+        { x: 2120, y: 250, collected: false },
+        { x: 2800, y: 350, collected: false }
+      ];
+
+      // Inimigos Variados
+      enemies = [
+        // Goombas (Tipo 'goomba')
+        { x: 500, y: 368, w: 32, h: 32, type: 'goomba', vx: -1.2, alive: true, state: 'walk' },
+        { x: 850, y: 368, w: 32, h: 32, type: 'goomba', vx: -1.2, alive: true, state: 'walk' },
+        { x: 1400, y: 368, w: 32, h: 32, type: 'goomba', vx: -1.5, alive: true, state: 'walk' },
+
+        // Koopa Troopas (Tipo 'koopa')
+        { x: 700, y: 362, w: 32, h: 38, type: 'koopa', vx: -1.4, alive: true, state: 'walk' },
+        { x: 1750, y: 362, w: 32, h: 38, type: 'koopa', vx: -1.6, alive: true, state: 'walk' },
+        { x: 2400, y: 362, w: 32, h: 38, type: 'koopa', vx: -1.5, alive: true, state: 'walk' },
+
+        // Plantas Piranha nos Canos
+        { x: 362, y: 320, w: 28, h: 36, type: 'plant', pipeY: 320, offsetY: 0, dir: -1, alive: true },
+        { x: 1162, y: 300, w: 28, h: 36, type: 'plant', pipeY: 300, offsetY: 0, dir: -1, alive: true },
+        { x: 2732, y: 310, w: 28, h: 36, type: 'plant', pipeY: 310, offsetY: 0, dir: -1, alive: true }
+      ];
+
+      powerups = [];
+      fireballs = [];
     }
 
-    // Atualização de Física e Lógica
-    function update() {
-      if (keys.left) player.vx = -player.speed;
-      else if (keys.right) player.vx = player.speed;
-      else player.vx = 0;
+    // ==========================================
+    // LÓGICA DE ATUALIZAÇÃO (PHYSICS & GAMEPLAY)
+    // ==========================================
 
+    function update() {
+      if (gameState !== 'PLAYING') return;
+
+      gameFrame++;
+
+      // Movimentação do Jogador
+      if (keys.left) {
+        player.vx = -player.speed;
+        player.facing = 'left';
+      } else if (keys.right) {
+        player.vx = player.speed;
+        player.facing = 'right';
+      } else {
+        player.vx *= 0.7; // Fricção suave
+        if (Math.abs(player.vx) < 0.1) player.vx = 0;
+      }
+
+      // Pulo
       if (keys.jump && player.grounded) {
         player.vy = player.jumpForce;
         player.grounded = false;
       }
 
+      // Disparo de Bola de Fogo
+      if (keys.firePressed && player.powerState === 'fire' && fireballs.length < 3) {
+        fireballs.push({
+          x: player.facing === 'right' ? player.x + player.w : player.x - 12,
+          y: player.y + player.h / 2 - 6,
+          w: 12,
+          h: 12,
+          vx: player.facing === 'right' ? 7 : -7,
+          vy: 2,
+          bounces: 0
+        });
+      }
+      keys.firePressed = false; // Reset trigger
+
+      // Gravidade e Posição do Jogador
       player.vy += player.gravity;
       player.x += player.vx;
-
-      if (player.x < 0) player.x = 0;
-
-      // Colisão Vertical e Plataformas
-      player.grounded = false;
       player.y += player.vy;
 
-      for (let p of platforms) {
+      // Limites da Fase (Esquerda)
+      if (player.x < 0) player.x = 0;
+
+      // Tempo de Invulnerabilidade
+      if (player.invulnerable > 0) player.invulnerable--;
+
+      // Colisões do Jogador com Plataformas e Canos
+      player.grounded = false;
+
+      const solidObjects = [
+        ...platforms,
+        ...pipes,
+        ...blocks
+      ];
+
+      for (let obj of solidObjects) {
         if (
-          player.x < p.x + p.w &&
-          player.x + player.width > p.x &&
-          player.y + player.height > p.y &&
-          player.y < p.y + p.h
+          player.x < obj.x + obj.w &&
+          player.x + player.w > obj.x &&
+          player.y < obj.y + obj.h &&
+          player.y + player.h > obj.y
         ) {
-          if (player.vy > 0 && player.y + player.height - player.vy <= p.y + 12) {
-            player.y = p.y - player.height;
+          // Colisão Por Cima (Pouso)
+          if (player.vy > 0 && player.y + player.h - player.vy <= obj.y + 12) {
+            player.y = obj.y - player.h;
             player.vy = 0;
             player.grounded = true;
           }
+          // Colisão Por Baixo (Bater a cabeça nas caixas)
+          else if (player.vy < 0 && player.y - player.vy >= obj.y + obj.h - 12) {
+            player.y = obj.y + obj.h;
+            player.vy = 0;
+
+            // Ativar Bloco de Interrogação / Tijolo
+            if (obj.type && !obj.hit) {
+              obj.hit = true;
+              obj.bounce = 8;
+              triggerBlockContent(obj);
+            }
+          }
+          // Colisão Lateral
+          else if (player.vx > 0 && player.x + player.w - player.vx <= obj.x + 6) {
+            player.x = obj.x - player.w;
+          } else if (player.vx < 0 && player.x - player.vx >= obj.x + obj.w - 6) {
+            player.x = obj.x + obj.w;
+          }
         }
       }
 
-      // Queda nos Buracos
-      if (player.y > canvas.height + 100) {
-        handleDeath();
-      }
+      // Animação de Quique dos Blocos Batinos
+      blocks.forEach(b => {
+        if (b.bounce > 0) b.bounce -= 1;
+      });
 
-      // Câmera Acompanhando o Jogador
-      cameraX = player.x - canvas.width / 3;
-      if (cameraX < 0) cameraX = 0;
-      if (cameraX > levelWidth - canvas.width) cameraX = levelWidth - canvas.width;
+      // Atualização de Power-ups (Cogumelo / Flor)
+      powerups.forEach((p, idx) => {
+        p.vy += 0.4;
+        p.x += p.vx;
+        p.y += p.vy;
 
-      // Coleta de Moedas
-      coins.forEach(c => {
-        if (!c.collected &&
-            player.x < c.x + 20 && player.x + player.width > c.x &&
-            player.y < c.y + 20 && player.y + player.height > c.y) {
-          c.collected = true;
-          score += 100;
-          scoreText.innerText = `MOEDAS: ${score}`;
+        // Colisão com Plataformas/Blocos
+        solidObjects.forEach(obj => {
+          if (p.x < obj.x + obj.w && p.x + p.w > obj.x && p.y < obj.y + obj.h && p.y + p.h > obj.y) {
+            if (p.vy > 0) {
+              p.y = obj.y - p.h;
+              p.vy = 0;
+            }
+          }
+        });
+
+        // Coleta do Power-up pelo Jogador
+        if (
+          player.x < p.x + p.w &&
+          player.x + player.w > p.x &&
+          player.y < p.y + p.h &&
+          player.y + player.h > p.y
+        ) {
+          if (p.type === 'mushroom') player.grow();
+          if (p.type === 'fireflower') {
+            player.powerState = 'fire';
+            if (player.h === 36) player.h = 48;
+          }
+          addScore(1000);
+          powerups.splice(idx, 1);
         }
       });
 
-      // Lógica dos Inimigos
-      enemies.forEach(e => {
+      // Coleta de Moedas Soltas
+      coinsList.forEach(c => {
+        if (!c.collected &&
+            player.x < c.x + 20 && player.x + player.w > c.x &&
+            player.y < c.y + 20 && player.y + player.h > c.y) {
+          c.collected = true;
+          addCoin();
+        }
+      });
+
+      // Atualização de Bolas de Fogo
+      fireballs.forEach((fb, fIdx) => {
+        fb.vy += 0.4;
+        fb.x += fb.vx;
+        fb.y += fb.vy;
+
+        // Quique nas superfícies
+        solidObjects.forEach(obj => {
+          if (fb.x < obj.x + obj.w && fb.x + fb.w > obj.x && fb.y < obj.y + obj.h && fb.y + fb.h > obj.y) {
+            if (fb.vy > 0) {
+              fb.y = obj.y - fb.h;
+              fb.vy = -5;
+              fb.bounces++;
+            } else {
+              fireballs.splice(fIdx, 1);
+            }
+          }
+        });
+
+        // Colisão da Bola de Fogo com Inimigos
+        enemies.forEach(e => {
+          if (e.alive && fb.x < e.x + e.w && fb.x + fb.w > e.x && fb.y < e.y + e.h && fb.y + fb.h > e.y) {
+            e.alive = false;
+            addScore(500);
+            fireballs.splice(fIdx, 1);
+          }
+        });
+
+        // Destruir bola de fogo distante ou após muitos quiques
+        if (fb.bounces > 4 || fb.x < cameraX || fb.x > cameraX + canvas.width + 100) {
+          fireballs.splice(fIdx, 1);
+        }
+      });
+
+      // Atualização dos Inimigos
+      enemies.forEach((e) => {
         if (!e.alive) return;
 
-        e.x += e.vx;
-        if (e.x <= e.minX || e.x >= e.maxX) e.vx *= -1;
+        // --- GOOMBA & KOOPA ---
+        if (e.type === 'goomba' || e.type === 'koopa') {
+          if (e.state === 'walk' || e.state === 'shell_sliding') {
+            const currentSpeed = e.state === 'shell_sliding' ? (e.vx > 0 ? 8 : -8) : e.vx;
+            e.x += currentSpeed;
 
-        if (
-          player.x < e.x + e.w &&
-          player.x + player.width > e.x &&
-          player.y < e.y + e.h &&
-          player.y + player.height > e.y
-        ) {
-          // Pular na cabeça do inimigo
-          if (player.vy > 0 && player.y + player.height - player.vy <= e.y + 12) {
-            e.alive = false;
-            player.vy = player.jumpForce * 0.6;
-            score += 200;
-            scoreText.innerText = `MOEDAS: ${score}`;
-          } else {
-            handleDeath();
+            // Inversão de direção em patrulha
+            if (e.state === 'walk') {
+              // Checar colisão com objetos para virar
+              solidObjects.forEach(obj => {
+                if (e.x < obj.x + obj.w && e.x + e.w > obj.x && e.y < obj.y + obj.h && e.y + e.h > obj.y) {
+                  e.vx *= -1;
+                }
+              });
+            }
+          }
+
+          // Colisão com Mario
+          if (
+            player.x < e.x + e.w &&
+            player.x + player.w > e.x &&
+            player.y < e.y + e.h &&
+            player.y + player.h > e.y
+          ) {
+            // Pulo na cabeça do inimigo
+            if (player.vy > 0 && player.y + player.h - player.vy <= e.y + 14) {
+              player.vy = player.jumpForce * 0.7; // Impulso do pulo
+
+              if (e.type === 'goomba') {
+                e.alive = false;
+                addScore(200);
+              } else if (e.type === 'koopa') {
+                if (e.state === 'walk') {
+                  e.state = 'shell_idle';
+                  e.h = 28;
+                  e.y += 10;
+                  addScore(300);
+                } else if (e.state === 'shell_idle') {
+                  e.state = 'shell_sliding';
+                  e.vx = player.x < e.x ? 8 : -8;
+                } else if (e.state === 'shell_sliding') {
+                  e.state = 'shell_idle';
+                }
+              }
+            } else {
+              // Chutar Casco Parado
+              if (e.type === 'koopa' && e.state === 'shell_idle') {
+                e.state = 'shell_sliding';
+                e.vx = player.x < e.x ? 8 : -8;
+              } else {
+                // Mario sofre dano
+                player.hit();
+              }
+            }
+          }
+
+          // Casco deslizando destrói outros inimigos
+          if (e.state === 'shell_sliding') {
+            enemies.forEach(other => {
+              if (other !== e && other.alive && e.x < other.x + other.w && e.x + e.w > other.x && e.y < other.y + other.h && e.y + e.h > other.y) {
+                other.alive = false;
+                addScore(500);
+              }
+            });
+          }
+        }
+
+        // --- PLANTA PIRANHA ---
+        if (e.type === 'plant') {
+          e.offsetY += 0.8 * e.dir;
+          if (e.offsetY < -42) e.dir = 1; // Sobe do cano
+          if (e.offsetY > 10) e.dir = -1; // Desce no cano
+
+          const currentY = e.pipeY + e.offsetY;
+
+          // Dano ao Mario ao encostar na planta
+          if (
+            player.x < e.x + e.w &&
+            player.x + player.w > e.x &&
+            player.y < currentY + e.h &&
+            player.y + player.h > currentY
+          ) {
+            player.hit();
           }
         }
       });
 
-      // Vitória ao Chegar no Mastro Final
-      if (player.x + player.width >= flag.x) {
-        alert('🎉 Você completou a fase! Parabéns!');
-        resetPlayer();
+      // Queda nos Abismos
+      if (player.y > canvas.height + 80) {
+        handlePlayerDeath();
+      }
+
+      // Posicionamento Suave da Câmera
+      cameraX = player.x - canvas.width / 2.8;
+      if (cameraX < 0) cameraX = 0;
+      if (cameraX > levelWidth - canvas.width) cameraX = levelWidth - canvas.width;
+
+      // Condição de Vitória (Bandeira Final)
+      if (player.x + player.w >= flag.x) {
+        gameState = 'WIN';
+        winStats.innerText = `Você concluiu o nível!\nMoedas: ${coins} | Pontuação Final: ${score}`;
+        winScreen.classList.remove('hidden');
       }
     }
 
-    function handleDeath() {
+    // Ativação do conteúdo dos blocos "❓"
+    function triggerBlockContent(block) {
+      if (block.content === 'coin') {
+        addCoin();
+      } else if (block.content === 'mushroom') {
+        powerups.push({
+          x: block.x + 4,
+          y: block.y - 32,
+          w: 24,
+          h: 24,
+          type: 'mushroom',
+          vx: 1.5,
+          vy: -2
+        });
+      } else if (block.content === 'fireflower') {
+        powerups.push({
+          x: block.x + 4,
+          y: block.y - 32,
+          w: 24,
+          h: 24,
+          type: 'fireflower',
+          vx: 0,
+          vy: -1
+        });
+      }
+    }
+
+    // Morte do Jogador
+    function handlePlayerDeath() {
       lives--;
-      livesText.innerText = `VIDAS: ${lives}`;
+      hudLives.innerText = lives;
+
       if (lives <= 0) {
-        alert('💥 Game Over! Reiniciando...');
-        lives = 3;
-        score = 0;
-        scoreText.innerText = 'MOEDAS: 0';
-        livesText.innerText = 'VIDAS: 3';
-        coins.forEach(c => c.collected = false);
-        enemies.forEach(e => e.alive = true);
+        gameState = 'GAMEOVER';
+        gameoverScreen.classList.remove('hidden');
+      } else {
+        player.reset();
       }
-      resetPlayer();
     }
 
-    // Renderização dos Gráficos
+    // Sistema de Pontuação e Moedas
+    function addCoin() {
+      coins++;
+      score += 200;
+      hudCoins.innerText = coins < 10 ? '0' + coins : coins;
+      hudScore.innerText = String(score).padStart(6, '0');
+    }
+
+    function addScore(pts) {
+      score += pts;
+      hudScore.innerText = String(score).padStart(6, '0');
+    }
+
+    // ==========================================
+    // RENDERIZAÇÃO GRÁFICA (CANVAS DRAWING)
+    // ==========================================
+
     function draw() {
+      // Limpeza do Canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       ctx.save();
-      ctx.translate(-cameraX, 0);
+      ctx.translate(-Math.round(cameraX), 0);
 
-      // Fundo (Céu)
-      ctx.fillStyle = '#5c94fc';
-      ctx.fillRect(cameraX, 0, canvas.width, canvas.height);
+      // 1. Fundo Parallax (Céu, Colinas e Nuvens)
+      drawBackground();
 
-      // Plataformas
-      platforms.forEach(p => {
-        ctx.fillStyle = '#2ecc71';
-        ctx.fillRect(p.x, p.y, p.w, p.h);
-        ctx.fillStyle = '#27ae60';
-        ctx.fillRect(p.x, p.y + 6, p.w, p.h - 6);
+      // 2. Canos Verdes
+      pipes.forEach(p => drawPipe(p));
+
+      // 3. Plataformas de Chão
+      platforms.forEach(p => drawPlatform(p));
+
+      // 4. Blocos e Caixas de Interrogação
+      blocks.forEach(b => drawBlock(b));
+
+      // 5. Moedas Soltas
+      coinsList.forEach(c => {
+        if (!c.collected) drawCoin(c.x, c.y);
       });
 
-      // Moedas
-      coins.forEach(c => {
-        if (!c.collected) {
-          ctx.fillStyle = '#f1c40f';
-          ctx.beginPath();
-          ctx.arc(c.x + 10, c.y + 10, 8, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      });
+      // 6. Power-ups (Cogumelo / Flor de Fogo)
+      powerups.forEach(p => drawPowerup(p));
 
-      // Inimigos
+      // 7. Bolas de Fogo
+      fireballs.forEach(fb => drawFireball(fb));
+
+      // 8. Inimigos
       enemies.forEach(e => {
-        if (e.alive) {
-          ctx.fillStyle = '#8e44ad';
-          ctx.fillRect(e.x, e.y, e.w, e.h);
-        }
+        if (e.alive) drawEnemy(e);
       });
 
-      // Bandera / Linha de Chegada
-      ctx.fillStyle = '#e67e22';
-      ctx.fillRect(flag.x, flag.y, flag.w, flag.h);
-      ctx.fillStyle = '#f1c40f';
-      ctx.beginPath();
-      ctx.moveTo(flag.x + flag.w, flag.y);
-      ctx.lineTo(flag.x + flag.w + 35, flag.y + 20);
-      ctx.lineTo(flag.x + flag.w, flag.y + 40);
-      ctx.fill();
+      // 9. Mastro e Bandeira Final
+      drawFlag();
 
-      // Jogador
-      ctx.fillStyle = player.color;
-      ctx.fillRect(player.x, player.y, player.width, player.height);
-      // Detalhe dos Olhos
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(player.x + (player.vx >= 0 ? 20 : 4), player.y + 8, 6, 8);
+      // 10. Jogador (Mario)
+      drawPlayer();
 
       ctx.restore();
     }
+
+    // Desenho do Fundo com Parallax
+    function drawBackground() {
+      // Céu em Gradiente
+      let skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      skyGrad.addColorStop(0, '#4a90e2');
+      skyGrad.addColorStop(1, '#a1c4fd');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(cameraX, 0, canvas.width, canvas.height);
+
+      // Nuvens (Camada Lenta)
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+      for (let i = 0; i < 10; i++) {
+        let cloudX = (i * 380) - cameraX * 0.2;
+        ctx.beginPath();
+        ctx.arc(cloudX, 80, 26, 0, Math.PI * 2);
+        ctx.arc(cloudX + 22, 70, 32, 0, Math.PI * 2);
+        ctx.arc(cloudX + 48, 80, 24, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Colinas Verdes (Camada Média)
+      ctx.fillStyle = '#27ae60';
+      for (let i = 0; i < 8; i++) {
+        let hillX = (i * 500) - cameraX * 0.4;
+        ctx.beginPath();
+        ctx.ellipse(hillX, 410, 160, 100, 0, 0, Math.PI);
+        ctx.fill();
+      }
+    }
+
+    // Desenho de Plataformas de Chão com Textura Retrô
+    function drawPlatform(p) {
+      // Topo de Grama
+      ctx.fillStyle = '#2ecc71';
+      ctx.fillRect(p.x, p.y, p.w, 10);
+
+      // Camada de Terra
+      ctx.fillStyle = '#d35400';
+      ctx.fillRect(p.x, p.y + 10, p.w, p.h - 10);
+
+      // Padrão de Blocos de Terra
+      ctx.strokeStyle = '#a04000';
+      ctx.lineWidth = 2;
+      for (let x = p.x; x < p.x + p.w; x += 32) {
+        ctx.strokeRect(x, p.y + 10, 32, p.h - 10);
+      }
+    }
+
+    // Desenho dos Canos Verdes
+    function drawPipe(pipe) {
+      ctx.fillStyle = '#27ae60';
+      ctx.fillRect(pipe.x, pipe.y, pipe.w, pipe.h);
+
+      // Topo do Cano (Aba)
+      ctx.fillStyle = '#2ecc71';
+      ctx.fillRect(pipe.x - 4, pipe.y, pipe.w + 8, 20);
+      ctx.strokeStyle = '#1e8449';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(pipe.x - 4, pipe.y, pipe.w + 8, 20);
+      ctx.strokeRect(pipe.x, pipe.y + 20, pipe.w, pipe.h - 20);
+    }
+
+    // Desenho das Caixas de Interrogação e Tijolos
+    function drawBlock(b) {
+      const renderY = b.y - b.bounce;
+
+      if (b.type === 'question') {
+        if (b.hit) {
+          // Caixa vazia/usada
+          ctx.fillStyle = '#7f8c8d';
+          ctx.fillRect(b.x, renderY, b.w, b.h);
+          ctx.strokeStyle = '#2c3e50';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(b.x, renderY, b.w, b.h);
+        } else {
+          // Caixa Ativa Amarela
+          ctx.fillStyle = '#f1c40f';
+          ctx.fillRect(b.x, renderY, b.w, b.h);
+          ctx.strokeStyle = '#d35400';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(b.x, renderY, b.w, b.h);
+
+          // Símbolo "?"
+          ctx.fillStyle = '#d35400';
+          ctx.font = 'bold 20px sans-serif';
+          ctx.fillText('?', b.x + 9, renderY + 24);
+        }
+      } else if (b.type === 'brick') {
+        // Tijolo Vermelho
+        ctx.fillStyle = '#e67e22';
+        ctx.fillRect(b.x, renderY, b.w, b.h);
+        ctx.strokeStyle = '#d35400';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(b.x, renderY, b.w, b.h);
+      }
+    }
+
+    // Desenho de Moedas Animadas
+    function drawCoin(x, y) {
+      ctx.fillStyle = '#f1c40f';
+      ctx.beginPath();
+      ctx.ellipse(x + 10, y + 10, 7, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#f39c12';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // Desenho dos Power-ups
+    function drawPowerup(p) {
+      if (p.type === 'mushroom') {
+        // Cabeça do Cogumelo
+        ctx.fillStyle = '#e74c3c';
+        ctx.beginPath();
+        ctx.arc(p.x + 12, p.y + 12, 12, Math.PI, 0);
+        ctx.fill();
+        // Caule
+        ctx.fillStyle = '#f5cd79';
+        ctx.fillRect(p.x + 4, p.y + 12, 16, 12);
+        // Bolinhas Brancas
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(p.x + 12, p.y + 6, 3, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.type === 'fireflower') {
+        // Pétalas da Flor
+        ctx.fillStyle = '#e67e22';
+        ctx.beginPath();
+        ctx.arc(p.x + 12, p.y + 12, 11, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#f1c40f';
+        ctx.beginPath();
+        ctx.arc(p.x + 12, p.y + 12, 6, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Desenho de Bolas de Fogo
+    function drawFireball(fb) {
+      ctx.fillStyle = '#e74c3c';
+      ctx.beginPath();
+      ctx.arc(fb.x + 6, fb.y + 6, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#f1c40f';
+      ctx.beginPath();
+      ctx.arc(fb.x + 6, fb.y + 6, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Desenho dos Inimigos
+    function drawEnemy(e) {
+      if (e.type === 'goomba') {
+        // Corpo Castanho
+        ctx.fillStyle = '#a0522d';
+        ctx.beginPath();
+        ctx.arc(e.x + 16, e.y + 16, 15, Math.PI, 0);
+        ctx.fill();
+        ctx.fillRect(e.x + 4, e.y + 16, 24, 12);
+
+        // Olhos
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(e.x + 8, e.y + 12, 5, 8);
+        ctx.fillRect(e.x + 19, e.y + 12, 5, 8);
+        ctx.fillStyle = '#000';
+        ctx.fillRect(e.x + 10, e.y + 14, 3, 4);
+        ctx.fillRect(e.x + 19, e.y + 14, 3, 4);
+      } else if (e.type === 'koopa') {
+        if (e.state === 'walk') {
+          // Casco Verde
+          ctx.fillStyle = '#2ecc71';
+          ctx.beginPath();
+          ctx.arc(e.x + 16, e.y + 24, 14, 0, Math.PI * 2);
+          ctx.fill();
+          // Cabeça
+          ctx.fillStyle = '#f1c40f';
+          ctx.beginPath();
+          ctx.arc(e.x + (e.vx > 0 ? 24 : 8), e.y + 10, 9, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // Apenas o Casco
+          ctx.fillStyle = '#2ecc71';
+          ctx.beginPath();
+          ctx.arc(e.x + 16, e.y + 14, 14, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (e.type === 'plant') {
+        const renderY = e.pipeY + e.offsetY;
+        // Cabeça Vermelha com Dentes
+        ctx.fillStyle = '#e74c3c';
+        ctx.beginPath();
+        ctx.arc(e.x + 14, renderY + 14, 14, 0, Math.PI * 2);
+        ctx.fill();
+        // Boca
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(e.x + 2, renderY + 12, 24, 4);
+      }
+    }
+
+    // Desenho da Bandeira Final
+    function drawFlag() {
+      // Mastro
+      ctx.fillStyle = '#ecf0f1';
+      ctx.fillRect(flag.x, flag.y, flag.w, flag.h);
+
+      // Esfera no Topo
+      ctx.fillStyle = '#f1c40f';
+      ctx.beginPath();
+      ctx.arc(flag.x + 5, flag.y, 10, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pano da Bandeira Verde
+      ctx.fillStyle = '#2ecc71';
+      ctx.beginPath();
+      ctx.moveTo(flag.x + flag.w, flag.y + 10);
+      ctx.lineTo(flag.x + flag.w + 45, flag.y + 30);
+      ctx.lineTo(flag.x + flag.w, flag.y + 50);
+      ctx.fill();
+    }
+
+    // Desenho Detalhado do Jogador (Mario)
+    function drawPlayer() {
+      // Piscar quando invulnerável
+      if (player.invulnerable % 4 >= 2) return;
+
+      const px = player.x;
+      const py = player.y;
+
+      // Cor da Roupa com base no Power-up
+      let hatColor = '#e74c3c'; // Vermelho Padrão
+      let overallsColor = '#2980b9'; // Macacão Azul
+
+      if (player.powerState === 'fire') {
+        hatColor = '#ffffff'; // Chapéu Branco
+        overallsColor = '#e74c3c'; // Macacão Vermelho
+      }
+
+      // Corpo / Roupa
+      ctx.fillStyle = overallsColor;
+      ctx.fillRect(px + 4, py + player.h - 20, player.w - 8, 16);
+
+      // Cabeça / Rosto
+      ctx.fillStyle = '#ffcd94';
+      ctx.fillRect(px + 6, py + 6, player.w - 12, 14);
+
+      // Chapéu
+      ctx.fillStyle = hatColor;
+      ctx.fillRect(px + 2, py, player.w - 4, 8);
+
+      // Olho e Bigode com base na Direção
+      ctx.fillStyle = '#000';
+      if (player.facing === 'right') {
+        ctx.fillRect(px + 18, py + 8, 4, 4); // Olho
+        ctx.fillRect(px + 14, py + 14, 12, 4); // Bigode
+      } else {
+        ctx.fillRect(px + 8, py + 8, 4, 4); // Olho
+        ctx.fillRect(px + 4, py + 14, 12, 4); // Bigode
+      }
+
+      // Sapatos
+      ctx.fillStyle = '#5e270d';
+      ctx.fillRect(px + 2, py + player.h - 6, 10, 6);
+      ctx.fillRect(px + player.w - 12, py + player.h - 6, 10, 6);
+    }
+
+    // ==========================================
+    // LOOP PRINCIPAL E CONTROLE DE ESTADOS
+    // ==========================================
 
     function gameLoop() {
       update();
@@ -288,6 +1163,29 @@
       requestAnimationFrame(gameLoop);
     }
 
+    function startGame() {
+      score = 0;
+      coins = 0;
+      lives = 3;
+      hudScore.innerText = '000000';
+      hudCoins.innerText = '00';
+      hudLives.innerText = '3';
+
+      buildLevel();
+      player.reset();
+
+      gameState = 'PLAYING';
+      menuScreen.classList.add('hidden');
+      gameoverScreen.classList.add('hidden');
+      winScreen.classList.add('hidden');
+    }
+
+    // Event Listeners dos Botões de Interface
+    btnStart.addEventListener('click', startGame);
+    btnRestart.addEventListener('click', startGame);
+    btnWinRestart.addEventListener('click', startGame);
+
+    // Inicializar o Loop do Jogo
     gameLoop();
   </script>
 </body>
